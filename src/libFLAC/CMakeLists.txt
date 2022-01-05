@@ -19,6 +19,9 @@ if(FLAC__CPU_X86_64 OR FLAC__CPU_IA32)
     option(WITH_AVX "Enable AVX, AVX2 optimizations" ON)
 endif()
 
+check_cpu_arch_arm64(FLAC__CPU_ARM64)
+
+
 include(CheckLanguage)
 check_language(ASM_NASM)
 if(CMAKE_ASM_NASM_COMPILER)
@@ -58,6 +61,7 @@ add_library(FLAC
     float.c
     format.c
     lpc.c
+    lpc_intrin_neon.c
     lpc_intrin_sse.c
     lpc_intrin_sse2.c
     lpc_intrin_sse41.c
