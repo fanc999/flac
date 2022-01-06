@@ -989,19 +989,6 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
 }
 
 
-void FLAC__lpc_compute_residual_from_qlp_coefficients_16_intrin_neon(const FLAC__int32 *data, uint32_t data_len, const FLAC__int32 qlp_coeff[], uint32_t order, int lp_quantization, FLAC__int32 residual[])
-{
-    int i = 0;
-    FLAC__int32 coeffCropped[32];
-    
-    // Cropping the coefficients to 16 bits signed fixed points.
-    for ( ; i < (int)order; i++)
-        coeffCropped[i] = flac_min(SHRT_MAX, flac_max(SHRT_MIN, qlp_coeff[i]));
-    
-    // After cropping the coefficients implementation is same as 32 bits.
-    FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(data, data_len, coeffCropped, order, lp_quantization, residual);
-}
-
 
 #endif /* FLAC__CPU_ARM64 && FLAC__HAS_ARCH64INTRIN */
 #endif /* FLAC__NO_ASM */
