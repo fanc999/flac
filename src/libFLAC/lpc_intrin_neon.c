@@ -980,7 +980,7 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
 				         sum += qlp_coeff[ 2] * (FLAC__int64)data[i- 3];
 				         sum += qlp_coeff[ 1] * (FLAC__int64)data[i- 2];
 				         sum += qlp_coeff[ 0] * (FLAC__int64)data[i- 1];
-			}(FLAC__int64)
+			}
 			residual[i] = data[i] - (sum >> lp_quantization);
 		}
 	}
