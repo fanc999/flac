@@ -241,7 +241,6 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
 {
     int i;
     FLAC__int32 sum;
-    
     FLAC__ASSERT(order > 0);
     FLAC__ASSERT(order <= 32);
 
@@ -250,176 +249,344 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
     if(order <= 12) {
         if(order > 8) {
             if(order > 10) {
-                if(order == 12) {
-                    int32x4_t tData[12];
-                    tData[0] = vld1q_s32(data - 12);
-                    tData[1] = vld1q_s32(data - 11);
-                    tData[2] = vld1q_s32(data - 10);
-                    tData[3] = vld1q_s32(data - 9);
-                    tData[4] = vld1q_s32(data - 8);
-                    tData[5] = vld1q_s32(data - 7);
-                    tData[6] = vld1q_s32(data - 6);
-                    tData[7] = vld1q_s32(data - 5);
-                    
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
+                if (order == 12) {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8], qlp_coeff[9], qlp_coeff[10], qlp_coeff[11]};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 12);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 11);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 10);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_5 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_6 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_7 = vld1q_s32(data - 5);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data+i-3);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data+i-2);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data+i-1);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data+i);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data+i+1);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data+i+2);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data+i+3);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_17 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_18 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_19 = vld1q_s32(data + i + 7);
+
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_2, 3);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_2, 3);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_2, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_2, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_2, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_2, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_2, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_2, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_2, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_2, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_2, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_2, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_1, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_1, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_1, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_1, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_1, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_1, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_6 ,qlp_coeff_1, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_10 ,qlp_coeff_1, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_14 ,qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_7, qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_11, qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_15, qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_8, qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_12, qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_16, qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_9, qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_13, qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_17, qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_10, qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_14, qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_18, qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_11, qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_15, qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_19, qlp_coeff_0, 0);
+
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
                         
-                        // Reading the 4 last data vectors.
-                        tData[ 8] = vld1q_s32(data+i-4);
-                        tData[ 9] = vld1q_s32(data+i-3);
-                        tData[10] = vld1q_s32(data+i-2);
-                        tData[11] = vld1q_s32(data+i-1);
-                        
-                        summ = vmulq_n_s32(tData[ 0],qlp_coeff[11]);
-                        mull = vmulq_n_s32(tData[ 1],qlp_coeff[10]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 2],qlp_coeff[ 9]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 3],qlp_coeff[ 8]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 4],qlp_coeff[ 7]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 5],qlp_coeff[ 6]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 6],qlp_coeff[ 5]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 7],qlp_coeff[ 4]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 8],qlp_coeff[ 3]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 9],qlp_coeff[ 2]); summ += mull;
-                        mull = vmulq_n_s32(tData[10],qlp_coeff[ 1]); summ += mull;
-                        mull = vmulq_n_s32(tData[11],qlp_coeff[ 0]); summ += mull;
-                        
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
-                        
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[4];
-                        tData[1] = tData[5];
-                        tData[2] = tData[6];
-                        tData[3] = tData[7];
-                        tData[4] = tData[8];
-                        tData[5] = tData[9];
-                        tData[6] = tData[10];
-                        tData[7] = tData[11];
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                        tmp_vec_5 = tmp_vec_17;
+                        tmp_vec_6 = tmp_vec_18;
+                        tmp_vec_7 = tmp_vec_19;
                     }
                 }
+
                 else { /* order == 11 */
-                    int32x4_t tData[11];
-                    tData[0] = vld1q_s32(data - 11);
-                    tData[1] = vld1q_s32(data - 10);
-                    tData[2] = vld1q_s32(data - 9);
-                    tData[3] = vld1q_s32(data - 8);
-                    tData[4] = vld1q_s32(data - 7);
-                    tData[5] = vld1q_s32(data - 6);
-                    tData[6] = vld1q_s32(data - 5);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8], qlp_coeff[9], qlp_coeff[10], 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 11);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 10);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_5 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_6 = vld1q_s32(data - 5);
                     
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_17 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_18 = vld1q_s32(data + i + 7);
                         
-                        // Reading the 4 last data vectors.
-                        tData[ 7] = vld1q_s32(data+i-4);
-                        tData[ 8] = vld1q_s32(data+i-3);
-                        tData[ 9] = vld1q_s32(data+i-2);
-                        tData[10] = vld1q_s32(data+i-1);
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_2, 2);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_2, 2);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_2, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_2, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_2, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_2, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_2, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_2, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_2, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_1, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_1, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_1, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_1, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_1, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_1, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_1, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_1, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_6 ,qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_10 ,qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_14 ,qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_7, qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_11, qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_15, qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_8, qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_12, qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_16, qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_9, qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_13, qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_17, qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_10, qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_14, qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_18, qlp_coeff_0, 0);
+
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
                         
-                        summ = vmulq_n_s32(tData[ 0],qlp_coeff[10]);
-                        mull = vmulq_n_s32(tData[ 1],qlp_coeff[ 9]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 2],qlp_coeff[ 8]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 3],qlp_coeff[ 7]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 4],qlp_coeff[ 6]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 5],qlp_coeff[ 5]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 6],qlp_coeff[ 4]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 7],qlp_coeff[ 3]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 8],qlp_coeff[ 2]); summ += mull;
-                        mull = vmulq_n_s32(tData[ 9],qlp_coeff[ 1]); summ += mull;
-                        mull = vmulq_n_s32(tData[10],qlp_coeff[ 0]); summ += mull;
-                        
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
-                        
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[4];
-                        tData[1] = tData[5];
-                        tData[2] = tData[6];
-                        tData[3] = tData[7];
-                        tData[4] = tData[8];
-                        tData[5] = tData[9];
-                        tData[6] = tData[10];
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                        tmp_vec_5 = tmp_vec_17;
+                        tmp_vec_6 = tmp_vec_18;
                     }
                 }
             }
             else {
                 if(order == 10) {
-                    int32x4_t tData[10];
-                    tData[0] = vld1q_s32(data - 10);
-                    tData[1] = vld1q_s32(data - 9);
-                    tData[2] = vld1q_s32(data - 8);
-                    tData[3] = vld1q_s32(data - 7);
-                    tData[4] = vld1q_s32(data - 6);
-                    tData[5] = vld1q_s32(data - 5);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8], qlp_coeff[9], 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 10);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_5 = vld1q_s32(data - 5);
                     
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_17 = vld1q_s32(data + i + 7);
                         
-                        // Reading the 4 last data vectors.
-                        tData[ 6] = vld1q_s32(data+i-4);
-                        tData[ 7] = vld1q_s32(data+i-3);
-                        tData[ 8] = vld1q_s32(data+i-2);
-                        tData[ 9] = vld1q_s32(data+i-1);
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_2, 1);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_2, 1);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_2, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_2, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_2, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_2, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_1, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_1, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_1, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_1, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_1, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_1, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_1, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_1, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_6 ,qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_10 ,qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_14 ,qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_7, qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_11, qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_15, qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_8, qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_12, qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_16, qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_9, qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_13, qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_17, qlp_coeff_0, 0);
+
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
                         
-                        summ = vmulq_n_s32(tData[0],qlp_coeff[9]);
-                        mull = vmulq_n_s32(tData[1],qlp_coeff[8]); summ += mull;
-                        mull = vmulq_n_s32(tData[2],qlp_coeff[7]); summ += mull;
-                        mull = vmulq_n_s32(tData[3],qlp_coeff[6]); summ += mull;
-                        mull = vmulq_n_s32(tData[4],qlp_coeff[5]); summ += mull;
-                        mull = vmulq_n_s32(tData[5],qlp_coeff[4]); summ += mull;
-                        mull = vmulq_n_s32(tData[6],qlp_coeff[3]); summ += mull;
-                        mull = vmulq_n_s32(tData[7],qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(tData[8],qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(tData[9],qlp_coeff[0]); summ += mull;
-                        
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
-                        
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[4];
-                        tData[1] = tData[5];
-                        tData[2] = tData[6];
-                        tData[3] = tData[7];
-                        tData[4] = tData[8];
-                        tData[5] = tData[9];
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                        tmp_vec_5 = tmp_vec_17;
                     }
                 }
                 else { /* order == 9 */
-                    int32x4_t tData[9];
-                    tData[0] = vld1q_s32(data - 9 );
-                    tData[1] = vld1q_s32(data - 8 );
-                    tData[2] = vld1q_s32(data - 7 );
-                    tData[3] = vld1q_s32(data - 6);
-                    tData[4] = vld1q_s32(data - 5);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8], 0, 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 5);
                     
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 7);
                         
-                        // Reading the 4 last data vectors.
-                        tData[ 5] = vld1q_s32(data+i-4);
-                        tData[ 6] = vld1q_s32(data+i-3);
-                        tData[ 7] = vld1q_s32(data+i-2);
-                        tData[ 8] = vld1q_s32(data+i-1);
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_2, 0);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_2, 0);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_2, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_1, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_1, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_1, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_1, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_1, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_1, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_1, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_1, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_6 ,qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_10 ,qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_14 ,qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_7, qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_11, qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_15, qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_8, qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_12, qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_16, qlp_coeff_0, 0);
+
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
                         
-                        summ = vmulq_n_s32(tData[0],qlp_coeff[8]);
-                        mull = vmulq_n_s32(tData[1],qlp_coeff[7]); summ += mull;
-                        mull = vmulq_n_s32(tData[2],qlp_coeff[6]); summ += mull;
-                        mull = vmulq_n_s32(tData[3],qlp_coeff[5]); summ += mull;
-                        mull = vmulq_n_s32(tData[4],qlp_coeff[4]); summ += mull;
-                        mull = vmulq_n_s32(tData[5],qlp_coeff[3]); summ += mull;
-                        mull = vmulq_n_s32(tData[6],qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(tData[7],qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(tData[8],qlp_coeff[0]); summ += mull;
-                        
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
-                        
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[4];
-                        tData[1] = tData[5];
-                        tData[2] = tData[6];
-                        tData[3] = tData[7];
-                        tData[4] = tData[8];
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
                     }
                 }
             }
@@ -427,63 +594,244 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
         else if(order > 4) {
             if(order > 6) {
                 if(order == 8) {
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-8),qlp_coeff[7]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-7),qlp_coeff[6]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-6),qlp_coeff[5]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-5),qlp_coeff[4]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-4),qlp_coeff[3]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-3),qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 5);
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_1, 3);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_1, 3);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_1, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_1, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_1, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_1, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_1, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_1, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_6 ,qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_10 ,qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_14 ,qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0, tmp_vec_7, qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1, tmp_vec_11, qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2, tmp_vec_15, qlp_coeff_0, 0);
+
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
+                        
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
                     }
                 }
                 else { /* order == 7 */
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-7),qlp_coeff[6]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-6),qlp_coeff[5]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-5),qlp_coeff[4]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-4),qlp_coeff[3]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-3),qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 5);
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_1, 2);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_1, 2);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_1, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_1, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_1, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_6 ,qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_10 ,qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_14 ,qlp_coeff_0, 0);
+
+                        
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
+                        
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
                     }
                 }
             }
             else {
                 if(order == 6) {
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-6),qlp_coeff[5]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-5),qlp_coeff[4]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-4),qlp_coeff[3]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-3),qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 5);
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_1, 1);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_1, 1);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_1, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_1, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_1, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_5 ,qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_9 ,qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_13 ,qlp_coeff_0, 0);
+
+                        
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
+                        
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
                     }
                 }
                 else { /* order == 5 */
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-5),qlp_coeff[4]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-4),qlp_coeff[3]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-3),qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], 0, 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 5);
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_1, 0);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_1, 0);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_1, 0);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_0, 3);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_0, 3);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_4 ,qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_8 ,qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_12 ,qlp_coeff_0, 0);
+
+                        
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
+                        tmp_vec_0 = tmp_vec_12;
                     }
                 }
             }
@@ -491,47 +839,123 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
         else {
             if(order > 2) {
                 if(order == 4) {
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-4),qlp_coeff[3]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-3),qlp_coeff[2]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_0, 3);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_0, 3);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_0, 3);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_0, 2);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_0, 2);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_3 ,qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_7 ,qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_11 ,qlp_coeff_0, 0);
+                        
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
                     }
                 }
                 else { /* order == 3 */
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-3),qlp_coeff[2]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]); summ += mull;
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], 0};
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_0, 2);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_0, 2);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_0, 2);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_0, 1);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_0, 1);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_2 ,qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_6 ,qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_10 ,qlp_coeff_0, 0);
+                        
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
                     }
                 }
             }
             else {
                 if(order == 2) {
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ, mull;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-2),qlp_coeff[1]);
-                        mull = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]); summ += mull;
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], 0, 0};
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_laneq_s32(tmp_vec_0, qlp_coeff_0, 1);
+                        summ_1 = vmulq_laneq_s32(tmp_vec_4, qlp_coeff_0, 1);
+                        summ_2 = vmulq_laneq_s32(tmp_vec_8, qlp_coeff_0, 1);
+
+                        summ_0 = vmlaq_laneq_s32(summ_0,tmp_vec_1 ,qlp_coeff_0, 0);
+                        summ_1 = vmlaq_laneq_s32(summ_1,tmp_vec_5 ,qlp_coeff_0, 0);
+                        summ_2 = vmlaq_laneq_s32(summ_2,tmp_vec_9 ,qlp_coeff_0, 0);
+                        
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
                     }
                 }
                 else { /* order == 1 */
-            
-                    for(i = 0; i < (int)data_len - 3; i+=4) {
-                        int32x4_t  summ;
-                        summ = vmulq_n_s32(vld1q_s32(data+i-1),qlp_coeff[0]);
-                        summ >>= lp_quantization;
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - summ);
+                    int32x4_t qlp_coeff_0 = vdupq_n_s32(qlp_coeff[0]);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int32x4_t summ_0, summ_1, summ_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 7);
+                        
+                        summ_0 = vmulq_s32(tmp_vec_0, qlp_coeff_0);
+                        summ_1 = vmulq_s32(tmp_vec_4, qlp_coeff_0);
+                        summ_2 = vmulq_s32(tmp_vec_8, qlp_coeff_0);
+
+                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
+                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
+                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
                     }
                 }
             }
@@ -606,389 +1030,1299 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
 	FLAC__ASSERT(order > 0);
 	FLAC__ASSERT(order <= 32);
 
+    
     // Using prologue reads is valid as encoder->private_->local_lpc_compute_residual_from_qlp_coefficients_64bit(signal+order,....)
 	if(order <= 12) {
 		if(order > 8) {
 			if(order > 10) {
 				if(order == 12) {
-                    int32x2_t tData[12];
-                    tData[0] = vld1_s32(data-12);
-                    tData[1] = vld1_s32(data-11);
-                    tData[2] = vld1_s32(data-10);
-                    tData[3] = vld1_s32(data-9);
-                    tData[4] = vld1_s32(data-8);
-                    tData[5] = vld1_s32(data-7);
-                    tData[6] = vld1_s32(data-6);
-                    tData[7] = vld1_s32(data-5);
-                    tData[8] = vld1_s32(data-4);
-                    tData[9] = vld1_s32(data-3);
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4],qlp_coeff[5],qlp_coeff[6],qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8],qlp_coeff[9],qlp_coeff[10],qlp_coeff[11]};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 12);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 11);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 10);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_5 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_6 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_7 = vld1q_s32(data - 5);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t  summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        
+                        int32x4_t tmp_vec_8 = vld1q_s32(data+i-4);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data+i-3);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data+i-2);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data+i-1);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data+i);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data+i+1);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data+i+2);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data+i+3);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_17 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_18 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_19 = vld1q_s32(data + i + 7);
+
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0),qlp_coeff_2, 3);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_2, 3);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4),qlp_coeff_2, 3);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_2, 3);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8),qlp_coeff_2, 3);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_2, 3);
+
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_1),qlp_coeff_2, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_2, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5),qlp_coeff_2, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_2, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9),qlp_coeff_2, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_9, qlp_coeff_2, 2);
+
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_2),qlp_coeff_2, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_2, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6),qlp_coeff_2, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_2, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10),qlp_coeff_2, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_10, qlp_coeff_2, 1);
+
+                        
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_3),qlp_coeff_2, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_2, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7),qlp_coeff_2, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_2, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11),qlp_coeff_2, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_11, qlp_coeff_2, 0);
+
+                        
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_4),qlp_coeff_1, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_1, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8),qlp_coeff_1, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_1, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12),qlp_coeff_1, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_12, qlp_coeff_1, 3);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_5),qlp_coeff_1, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_1, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9),qlp_coeff_1, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_1, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13),qlp_coeff_1, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_13, qlp_coeff_1, 2);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_6),qlp_coeff_1, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_6, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_10),qlp_coeff_1, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_10, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_14),qlp_coeff_1, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_14, qlp_coeff_1, 1);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_7),qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_7, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_11),qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_11, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_15),qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_15, qlp_coeff_1, 0);
+
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_8),qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_8, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_12),qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_12, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_16),qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_16, qlp_coeff_0, 3);
+
+                        
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_9), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_9, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_13), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_13, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_17), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_17, qlp_coeff_0, 2);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_10), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_10, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_14), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_14, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_18), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_18, qlp_coeff_0, 1);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_11), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_11, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_15), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_15, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_19), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_19, qlp_coeff_0, 0);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization),vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual+i, vld1q_s32(data+i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization),vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual+i+4, vld1q_s32(data+i+4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization),vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual+i+8, vld1q_s32(data+i+8) - res2);
+                        
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                        tmp_vec_5 = tmp_vec_17;
+                        tmp_vec_6 = tmp_vec_18;
+                        tmp_vec_7 = tmp_vec_19;
+                    }
+                }
+				else { /* order == 11 */			
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4],qlp_coeff[5],qlp_coeff[6],qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8],qlp_coeff[9],qlp_coeff[10],0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 11);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 10);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_5 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_6 = vld1q_s32(data - 5);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t  summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        
+                        int32x4_t tmp_vec_7 = vld1q_s32(data+i-4);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data+i-3);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data+i-2);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data+i-1);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data+i);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data+i+1);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data+i+2);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data+i+3);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_17 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_18 = vld1q_s32(data + i + 7);
+
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0),qlp_coeff_2, 2);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_2, 2);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4),qlp_coeff_2, 2);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_2, 2);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8),qlp_coeff_2, 2);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_2, 2);
+
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_1),qlp_coeff_2, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_2, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5),qlp_coeff_2, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_2, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9),qlp_coeff_2, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_9, qlp_coeff_2, 1);
+
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_2),qlp_coeff_2, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_2, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6),qlp_coeff_2, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_2, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10),qlp_coeff_2, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_10, qlp_coeff_2, 0);
+
+                        
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_3),qlp_coeff_1, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_1, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7),qlp_coeff_1, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_1, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11),qlp_coeff_1, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_11, qlp_coeff_1, 3);
+
+                        
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_4),qlp_coeff_1, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_1, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8),qlp_coeff_1, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_1, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12),qlp_coeff_1, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_12, qlp_coeff_1, 2);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_5),qlp_coeff_1, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9),qlp_coeff_1, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13),qlp_coeff_1, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_13, qlp_coeff_1, 1);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_6),qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_6, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_10),qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_10, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_14),qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_14, qlp_coeff_1, 0);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_7),qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_7, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_11),qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_11, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_15),qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_15, qlp_coeff_0, 3);
+
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0,vget_low_s32(tmp_vec_8),qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_8, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_12),qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_12, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_16),qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec_16, qlp_coeff_0, 2);
+
+                        
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_9), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_9, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_13), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_13, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_17), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_17, qlp_coeff_0, 1);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_10), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_10, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_14), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_14, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_18), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_18, qlp_coeff_0, 0);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization),vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual+i, vld1q_s32(data+i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization),vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual+i+4, vld1q_s32(data+i+4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization),vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual+i+8, vld1q_s32(data+i+8) - res2);
+                        
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                        tmp_vec_5 = tmp_vec_17;
+                        tmp_vec_6 = tmp_vec_18;
+                    }
+                }
+            }
+            else
+            {
+                if (order == 10) {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8], qlp_coeff[9], 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 10);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_5 = vld1q_s32(data - 5);
                     
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
                         
-                        // Reading the 2 last data vectors.
-                        tData[10] = vld1_s32(data+i-2);
-                        tData[11] = vld1_s32(data+i-1);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_17 = vld1q_s32(data + i + 7);
                         
-                        summ = vmull_n_s32(tData[ 0],qlp_coeff[11]);
-						mull = vmull_n_s32(tData[ 1],qlp_coeff[10]);    summ += mull;
-						mull = vmull_n_s32(tData[ 2],qlp_coeff[ 9]);    summ += mull;
-						mull = vmull_n_s32(tData[ 3],qlp_coeff[ 8]);    summ += mull;
-						mull = vmull_n_s32(tData[ 4],qlp_coeff[ 7]);    summ += mull;
-						mull = vmull_n_s32(tData[ 5],qlp_coeff[ 6]);    summ += mull;
-						mull = vmull_n_s32(tData[ 6],qlp_coeff[ 5]);    summ += mull;
-						mull = vmull_n_s32(tData[ 7],qlp_coeff[ 4]);    summ += mull;
-						mull = vmull_n_s32(tData[ 8],qlp_coeff[ 3]);    summ += mull;
-						mull = vmull_n_s32(tData[ 9],qlp_coeff[ 2]);    summ += mull;
-						mull = vmull_n_s32(tData[10],qlp_coeff[ 1]);    summ += mull;
-						mull = vmull_n_s32(tData[11],qlp_coeff[ 0]);    summ += mull;
-						
-                        summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_2, 1);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_2, 1);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_2, 1);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_2, 1);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_2, 1);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_2, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_2, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_2, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_2, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_2, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_2, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_2, 0);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_1, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_1, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_1, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_1, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_1, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_1, 3);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_1, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_1, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_1, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_1, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_1, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_1, 2);
+
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_4), qlp_coeff_1, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8), qlp_coeff_1, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12), qlp_coeff_1, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_12, qlp_coeff_1, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_5), qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9), qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13), qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_13, qlp_coeff_1, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_6), qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_6, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_10), qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_10, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_14), qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_14, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_7), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_7, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_11), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_11, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_15), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_15, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_8), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_8, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_12), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_12, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_16), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_16, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_9), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_9, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_13), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_13, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_17), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_17, qlp_coeff_0, 0);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                        tmp_vec_5 = tmp_vec_17;
+                    }
+                }
+
+                else /* order == 9 */ {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                    int32x4_t qlp_coeff_2 = {qlp_coeff[8], 0, 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 9);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_4 = vld1q_s32(data - 5);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_16 = vld1q_s32(data + i + 7);
+
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_2, 0);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_2, 0);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_2, 0);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_2, 0);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_2, 0);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_2, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_1, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_1, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_1, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_1, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_1, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_1, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_1, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_1, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_1, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_1, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_1, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_1, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_1, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_1, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_1, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_1, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_4), qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8), qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12), qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_12, qlp_coeff_1, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_5), qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9), qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13), qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_13, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_6), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_6, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_10), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_10, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_14), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_14, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_7), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_7, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_11), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_11, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_15), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_15, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_8), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_8, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_12), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_12, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_16), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_16, qlp_coeff_0, 0);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                        tmp_vec_4 = tmp_vec_16;
+                    }
+                }
+            }
+        }
+        else if (order > 4)
+        {
+            if (order > 6)
+            {
+                if (order == 8)
+                {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], qlp_coeff[7]};
+                 
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 8);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_3 = vld1q_s32(data - 5);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_15 = vld1q_s32(data + i + 7);
                         
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[2];
-                        tData[1] = tData[3];
-                        tData[2] = tData[4];
-                        tData[3] = tData[5];
-                        tData[4] = tData[6];
-                        tData[5] = tData[7];
-                        tData[6] = tData[8];
-                        tData[7] = tData[9];
-                        tData[8] = tData[10];
-                        tData[9] = tData[11];                
-					}
-				}
-				else { /* order == 11 */
-			
-                    int32x2_t tData[11];
-                    tData[0] = vld1_s32(data-11);
-                    tData[1] = vld1_s32(data-10);
-                    tData[2] = vld1_s32(data-9);
-                    tData[3] = vld1_s32(data-8);
-                    tData[4] = vld1_s32(data-7);
-                    tData[5] = vld1_s32(data-6);
-                    tData[6] = vld1_s32(data-5);
-                    tData[7] = vld1_s32(data-4);
-                    tData[8] = vld1_s32(data-3);
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_1, 3);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_1, 3);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_1, 3);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_1, 3);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_1, 3);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_1, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_1, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_1, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_1, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_1, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_1, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_1, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_1, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_1, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_1, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_1, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_1, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_4), qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8), qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12), qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_12, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_5), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_13, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_6), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_6, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_10), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_10, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_14), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_14, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_7), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_7, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_11), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_11, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_15), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_15, qlp_coeff_0, 0);
+
+
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                        tmp_vec_3 = tmp_vec_15;
+                    }
+                }
+                else /* order == 7 */
+                {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], qlp_coeff[6], 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 7);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_2 = vld1q_s32(data - 5);
                     
-					for(i = 0; i < (int)data_len-1; i+=2) {
-                        int64x2_t  summ, mull;
-                        int32x2_t summ32;
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        int32x4_t tmp_vec_3 = vld1q_s32(data +i - 4);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_14 = vld1q_s32(data + i + 7);
                         
-                        // Reading the 2 last data vectors.
-                        tData[9] = vld1_s32(data+i-2);
-                        tData[10] = vld1_s32(data+i-1);
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_1, 2);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_1, 2);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_1, 2);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_1, 2);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_1, 2);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_1, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_1, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_1, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_1, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_1, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_1, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_4), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_12, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_5), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_13, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_6), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_6, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_10), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_10, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_14), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_14, qlp_coeff_0, 0);
+
                         
-                        summ = vmull_n_s32(tData[ 0],qlp_coeff[10]);
-                        mull = vmull_n_s32(tData[ 1],qlp_coeff[ 9]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 2],qlp_coeff[ 8]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 3],qlp_coeff[ 7]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 4],qlp_coeff[ 6]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 5],qlp_coeff[ 5]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 6],qlp_coeff[ 4]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 7],qlp_coeff[ 3]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 8],qlp_coeff[ 2]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 9],qlp_coeff[ 1]);    summ += mull;
-                        mull = vmull_n_s32(tData[10],qlp_coeff[ 0]);    summ += mull;
-                        
-                        summ32 = vqmovn_s64(summ >> lp_quantization);
-                        vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-                        
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[2];
-                        tData[1] = tData[3];
-                        tData[2] = tData[4];
-                        tData[3] = tData[5];
-                        tData[4] = tData[6];
-                        tData[5] = tData[7];
-                        tData[6] = tData[8];
-                        tData[7] = tData[9];
-                        tData[8] = tData[10];
-					}
-				}
-			}
-			else {
-				if(order == 10) {
-                    int32x2_t tData[10];
-                    tData[0] = vld1_s32(data-10);
-                    tData[1] = vld1_s32(data-9);
-                    tData[2] = vld1_s32(data-8);
-                    tData[3] = vld1_s32(data-7);
-                    tData[4] = vld1_s32(data-6);
-                    tData[5] = vld1_s32(data-5);
-                    tData[6] = vld1_s32(data-4);
-                    tData[7] = vld1_s32(data-3);
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                        tmp_vec_2 = tmp_vec_14;
+                    }
+                }
+            }
+            else
+            {
+                if (order == 6) {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], qlp_coeff[5], 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 6);
+                    int32x4_t tmp_vec_1 = vld1q_s32(data - 5);
                     
-                    for(i = 0; i < (int)data_len-1; i+=2) {
-                        int64x2_t  summ, mull;
-                        int32x2_t summ32;
-                        
-                        // Reading the 2 last data vectors.
-                        tData[8] = vld1_s32(data+i-2);
-                        tData[9] = vld1_s32(data+i-1);
-                        
-                        summ = vmull_n_s32(tData[ 0],qlp_coeff[9]);
-                        mull = vmull_n_s32(tData[ 1],qlp_coeff[8]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 2],qlp_coeff[7]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 3],qlp_coeff[6]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 4],qlp_coeff[5]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 5],qlp_coeff[4]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 6],qlp_coeff[3]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 7],qlp_coeff[2]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 8],qlp_coeff[1]);    summ += mull;
-                        mull = vmull_n_s32(tData[ 9],qlp_coeff[0]);    summ += mull;
-                        
-                        summ32 = vqmovn_s64(summ >> lp_quantization);
-                        vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-                        
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[2];
-                        tData[1] = tData[3];
-                        tData[2] = tData[4];
-                        tData[3] = tData[5];
-                        tData[4] = tData[6];
-                        tData[5] = tData[7];
-                        tData[6] = tData[8];
-                        tData[7] = tData[9];
-					}
-				}
-				else { /* order == 9 */
-                    int32x2_t tData[9];
-                    tData[0] = vld1_s32(data-9);
-                    tData[1] = vld1_s32(data-8);
-                    tData[2] = vld1_s32(data-7);
-                    tData[3] = vld1_s32(data-6);
-                    tData[4] = vld1_s32(data-5);
-                    tData[5] = vld1_s32(data-4);
-                    tData[6] = vld1_s32(data-3);
                     
-                    for(i = 0; i < (int)data_len-1; i+=2) {
-                        int64x2_t  summ, mull;
-                        int32x2_t summ32;
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_13 = vld1q_s32(data + i + 7);
                         
-                        // Reading the 2 last data vectors.
-                        tData[7] = vld1_s32(data+i-2);
-                        tData[8] = vld1_s32(data+i-1);
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_1, 1);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_1, 1);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_1, 1);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_1, 1);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_1, 1);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_1, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_1, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_1, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_1, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_1, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_4), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_12, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_5), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_5, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_9), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_9, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_13), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_13, qlp_coeff_0, 0);
+
                         
-                        summ = vmull_n_s32(tData[0],qlp_coeff[8]);
-                        mull = vmull_n_s32(tData[1],qlp_coeff[7]);    summ += mull;
-                        mull = vmull_n_s32(tData[2],qlp_coeff[6]);    summ += mull;
-                        mull = vmull_n_s32(tData[3],qlp_coeff[5]);    summ += mull;
-                        mull = vmull_n_s32(tData[4],qlp_coeff[4]);    summ += mull;
-                        mull = vmull_n_s32(tData[5],qlp_coeff[3]);    summ += mull;
-                        mull = vmull_n_s32(tData[6],qlp_coeff[2]);    summ += mull;
-                        mull = vmull_n_s32(tData[7],qlp_coeff[1]);    summ += mull;
-                        mull = vmull_n_s32(tData[8],qlp_coeff[0]);    summ += mull;
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        tmp_vec_0 = tmp_vec_12;
+                        tmp_vec_1 = tmp_vec_13;
+                    }
+                }
+
+                else
+                { /* order == 5 */
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    int32x4_t qlp_coeff_1 = {qlp_coeff[4], 0, 0, 0};
+
+                    int32x4_t tmp_vec_0 = vld1q_s32(data - 5);
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_12 = vld1q_s32(data + i + 7);
                         
-                        summ32 = vqmovn_s64(summ >> lp_quantization);
-                        vst1_s32(residual+i, vld1_s32(data+i) - summ32);
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_1, 0);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_1, 0);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_1, 0);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_1, 0);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_1, 0);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_1, 0);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_0, 3);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_0, 3);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_0, 3);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_4), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_4, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_8), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_8, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_12), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_12, qlp_coeff_0, 0);
+
                         
-                        // Moving the data registers while avoiding loads..
-                        tData[0] = tData[2];
-                        tData[1] = tData[3];
-                        tData[2] = tData[4];
-                        tData[3] = tData[5];
-                        tData[4] = tData[6];
-                        tData[5] = tData[7];
-                        tData[6] = tData[8];
-					}
-				}
-			}
-		}
-		else if(order > 4) {
-			if(order > 6) {
-				if(order == 8) {
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-8),qlp_coeff[7]);
-						mull = vmull_n_s32(vld1_s32(data+i-7),qlp_coeff[6]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-6),qlp_coeff[5]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-5),qlp_coeff[4]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-4),qlp_coeff[3]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-3),qlp_coeff[2]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-				else { /* order == 7 */
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-7),qlp_coeff[6]);
-						mull = vmull_n_s32(vld1_s32(data+i-6),qlp_coeff[5]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-5),qlp_coeff[4]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-4),qlp_coeff[3]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-3),qlp_coeff[2]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-			}
-			else {
-				if(order == 6) {
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-6),qlp_coeff[5]);
-						mull = vmull_n_s32(vld1_s32(data+i-5),qlp_coeff[4]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-4),qlp_coeff[3]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-3),qlp_coeff[2]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-				else { /* order == 5 */
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-5),qlp_coeff[4]);
-						mull = vmull_n_s32(vld1_s32(data+i-4),qlp_coeff[3]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-3),qlp_coeff[2]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-			}
-		}
-		else {
-			if(order > 2) {
-				if(order == 4) {
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-4),qlp_coeff[3]);
-						mull = vmull_n_s32(vld1_s32(data+i-3),qlp_coeff[2]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-				else { /* order == 3 */
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-3),qlp_coeff[2]);
-						mull = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]); summ += mull;
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-			}
-			else {
-				if(order == 2) {
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ, mull;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-2),qlp_coeff[1]);
-						mull = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]); summ += mull;
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-				else { /* order == 1 */
-			
-					for(i = 0; i < (int)data_len-1; i+=2) {
-						int64x2_t  summ;
-						int32x2_t summ32;
-						summ = vmull_n_s32(vld1_s32(data+i-1),qlp_coeff[0]);
-						
-						summ32 = vqmovn_s64(summ >> lp_quantization);
-						vst1_s32(residual+i, vld1_s32(data+i) - summ32);
-					}
-				}
-			}
-		}
-		for(; i < (int)data_len; i++) {
-			sum = 0;
-			switch(order) {
-				case 12: sum += qlp_coeff[11] * (FLAC__int64)data[i-12]; /* Falls through. */
-				case 11: sum += qlp_coeff[10] * (FLAC__int64)data[i-11]; /* Falls through. */
-				case 10: sum += qlp_coeff[ 9] * (FLAC__int64)data[i-10]; /* Falls through. */
-				case 9:  sum += qlp_coeff[ 8] * (FLAC__int64)data[i- 9]; /* Falls through. */
-				case 8:  sum += qlp_coeff[ 7] * (FLAC__int64)data[i- 8]; /* Falls through. */
-				case 7:  sum += qlp_coeff[ 6] * (FLAC__int64)data[i- 7]; /* Falls through. */
-				case 6:  sum += qlp_coeff[ 5] * (FLAC__int64)data[i- 6]; /* Falls through. */
-				case 5:  sum += qlp_coeff[ 4] * (FLAC__int64)data[i- 5]; /* Falls through. */
-				case 4:  sum += qlp_coeff[ 3] * (FLAC__int64)data[i- 4]; /* Falls through. */
-				case 3:  sum += qlp_coeff[ 2] * (FLAC__int64)data[i- 3]; /* Falls through. */
-				case 2:  sum += qlp_coeff[ 1] * (FLAC__int64)data[i- 2]; /* Falls through. */
-				case 1:  sum += qlp_coeff[ 0] * (FLAC__int64)data[i- 1];
-			}
-			residual[i] = data[i] - (sum >> lp_quantization);
-		}
-	}
-	else { /* order > 12 */
-		for(i = 0; i < (int)data_len; i++) {
-			sum = 0;
-			switch(order) {
-				case 32: sum += qlp_coeff[31] * (FLAC__int64)data[i-32]; /* Falls through. */
-				case 31: sum += qlp_coeff[30] * (FLAC__int64)data[i-31]; /* Falls through. */
-				case 30: sum += qlp_coeff[29] * (FLAC__int64)data[i-30]; /* Falls through. */
-				case 29: sum += qlp_coeff[28] * (FLAC__int64)data[i-29]; /* Falls through. */
-				case 28: sum += qlp_coeff[27] * (FLAC__int64)data[i-28]; /* Falls through. */
-				case 27: sum += qlp_coeff[26] * (FLAC__int64)data[i-27]; /* Falls through. */
-				case 26: sum += qlp_coeff[25] * (FLAC__int64)data[i-26]; /* Falls through. */
-				case 25: sum += qlp_coeff[24] * (FLAC__int64)data[i-25]; /* Falls through. */
-				case 24: sum += qlp_coeff[23] * (FLAC__int64)data[i-24]; /* Falls through. */
-				case 23: sum += qlp_coeff[22] * (FLAC__int64)data[i-23]; /* Falls through. */
-				case 22: sum += qlp_coeff[21] * (FLAC__int64)data[i-22]; /* Falls through. */
-				case 21: sum += qlp_coeff[20] * (FLAC__int64)data[i-21]; /* Falls through. */
-				case 20: sum += qlp_coeff[19] * (FLAC__int64)data[i-20]; /* Falls through. */
-				case 19: sum += qlp_coeff[18] * (FLAC__int64)data[i-19]; /* Falls through. */
-				case 18: sum += qlp_coeff[17] * (FLAC__int64)data[i-18]; /* Falls through. */
-				case 17: sum += qlp_coeff[16] * (FLAC__int64)data[i-17]; /* Falls through. */
-				case 16: sum += qlp_coeff[15] * (FLAC__int64)data[i-16]; /* Falls through. */
-				case 15: sum += qlp_coeff[14] * (FLAC__int64)data[i-15]; /* Falls through. */
-				case 14: sum += qlp_coeff[13] * (FLAC__int64)data[i-14]; /* Falls through. */
-				case 13: sum += qlp_coeff[12] * (FLAC__int64)data[i-13];
-				         sum += qlp_coeff[11] * (FLAC__int64)data[i-12];
-				         sum += qlp_coeff[10] * (FLAC__int64)data[i-11];
-				         sum += qlp_coeff[ 9] * (FLAC__int64)data[i-10];
-				         sum += qlp_coeff[ 8] * (FLAC__int64)data[i- 9];
-				         sum += qlp_coeff[ 7] * (FLAC__int64)data[i- 8];
-				         sum += qlp_coeff[ 6] * (FLAC__int64)data[i- 7];
-				         sum += qlp_coeff[ 5] * (FLAC__int64)data[i- 6];
-				         sum += qlp_coeff[ 4] * (FLAC__int64)data[i- 5];
-				         sum += qlp_coeff[ 3] * (FLAC__int64)data[i- 4];
-				         sum += qlp_coeff[ 2] * (FLAC__int64)data[i- 3];
-				         sum += qlp_coeff[ 1] * (FLAC__int64)data[i- 2];
-				         sum += qlp_coeff[ 0] * (FLAC__int64)data[i- 1];
-			}
-			residual[i] = data[i] - (sum >> lp_quantization);
-		}
-	}
-    
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        tmp_vec_0 = tmp_vec_12;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (order > 2)
+            {
+                if (order == 4)
+                {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], qlp_coeff[3]};
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 4);
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_3 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i - 0);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_7 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 4);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_11 = vld1q_s32(data + i + 7);
+                        
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_0, 3);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_0, 3);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_0, 3);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_0, 3);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_0, 3);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_0, 3);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_0, 2);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_0, 2);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_0, 2);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_3), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_3, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_7), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_7, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_11), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_11, qlp_coeff_0, 0);
+                        
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                    }
+                }
+                else
+                { /* order == 3 */
+
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], qlp_coeff[2], 0};
+                    
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 3);
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_2 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i + 1);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_6 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 5);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_10 = vld1q_s32(data + i + 7);
+                        
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_0, 2);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_0, 2);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_0, 2);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_0, 2);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_0, 2);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_0, 2);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_0, 1);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_0, 1);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_0, 1);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_2), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_2, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_6), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_6, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_10), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_10, qlp_coeff_0, 0);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                    }
+                }
+            }
+            else
+            {
+                if (order == 2)
+                {
+                    int32x4_t qlp_coeff_0 = {qlp_coeff[0], qlp_coeff[1], 0, 0};
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 2);
+                        int32x4_t tmp_vec_1 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i + 2);
+                        int32x4_t tmp_vec_5 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 6);
+                        int32x4_t tmp_vec_9 = vld1q_s32(data + i + 7);
+                        
+                        summ_l_0 = vmull_laneq_s32(vget_low_s32(tmp_vec_0), qlp_coeff_0, 1);
+                        summ_h_0 = vmull_high_laneq_s32(tmp_vec_0, qlp_coeff_0, 1);
+
+                        summ_l_1 = vmull_laneq_s32(vget_low_s32(tmp_vec_4), qlp_coeff_0, 1);
+                        summ_h_1 = vmull_high_laneq_s32(tmp_vec_4, qlp_coeff_0, 1);
+
+                        summ_l_2 = vmull_laneq_s32(vget_low_s32(tmp_vec_8), qlp_coeff_0, 1);
+                        summ_h_2 = vmull_high_laneq_s32(tmp_vec_8, qlp_coeff_0, 1);
+
+                        summ_l_0 = vmlal_laneq_s32(summ_l_0, vget_low_s32(tmp_vec_1), qlp_coeff_0, 0);
+                        summ_h_0 = vmlal_high_laneq_s32(summ_h_0, tmp_vec_1, qlp_coeff_0, 0);
+
+                        summ_l_1 = vmlal_laneq_s32(summ_l_1, vget_low_s32(tmp_vec_5), qlp_coeff_0, 0);
+                        summ_h_1 = vmlal_high_laneq_s32(summ_h_1, tmp_vec_5, qlp_coeff_0, 0);
+
+                        summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec_9), qlp_coeff_0, 0);
+                        summ_h_2 = vmlal_high_laneq_s32(summ_h_2, tmp_vec_9, qlp_coeff_0, 0);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                    }
+                }
+
+                else
+                { /* order == 1 */
+
+                    int32x2_t qlp_coeff_0_2 = vdup_n_s32(qlp_coeff[0]);
+                    int32x4_t qlp_coeff_0_4 = vdupq_n_s32(qlp_coeff[0]);
+
+                    for (i = 0; i < (int)data_len - 11; i += 12)
+                    {
+                        int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
+                        int32x4_t tmp_vec_0 = vld1q_s32(data + i - 1);
+                        int32x4_t tmp_vec_4 = vld1q_s32(data + i + 3);
+                        int32x4_t tmp_vec_8 = vld1q_s32(data + i + 7);
+                        
+                        summ_l_0 = vmull_s32(vget_low_s32(tmp_vec_0), qlp_coeff_0_2);
+                        summ_h_0 = vmull_high_s32(tmp_vec_0, qlp_coeff_0_4);
+
+                        summ_l_1 = vmull_s32(vget_low_s32(tmp_vec_4), qlp_coeff_0_2);
+                        summ_h_1 = vmull_high_s32(tmp_vec_4, qlp_coeff_0_4);
+
+                        summ_l_2 = vmull_s32(vget_low_s32(tmp_vec_8), qlp_coeff_0_2);
+                        summ_h_2 = vmull_high_s32(tmp_vec_8, qlp_coeff_0_4);
+
+                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
+                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
+                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
+                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
+                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
+                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                    }
+                }
+            }
+        }
+        for (; i < (int)data_len; i++)
+        {
+            sum = 0;
+            switch (order)
+            {
+            case 12:
+                sum += qlp_coeff[11] * (FLAC__int64)data[i - 12]; /* Falls through. */
+            case 11:
+                sum += qlp_coeff[10] * (FLAC__int64)data[i - 11]; /* Falls through. */
+            case 10:
+                sum += qlp_coeff[9] * (FLAC__int64)data[i - 10]; /* Falls through. */
+            case 9:
+                sum += qlp_coeff[8] * (FLAC__int64)data[i - 9]; /* Falls through. */
+            case 8:
+                sum += qlp_coeff[7] * (FLAC__int64)data[i - 8]; /* Falls through. */
+            case 7:
+                sum += qlp_coeff[6] * (FLAC__int64)data[i - 7]; /* Falls through. */
+            case 6:
+                sum += qlp_coeff[5] * (FLAC__int64)data[i - 6]; /* Falls through. */
+            case 5:
+                sum += qlp_coeff[4] * (FLAC__int64)data[i - 5]; /* Falls through. */
+            case 4:
+                sum += qlp_coeff[3] * (FLAC__int64)data[i - 4]; /* Falls through. */
+            case 3:
+                sum += qlp_coeff[2] * (FLAC__int64)data[i - 3]; /* Falls through. */
+            case 2:
+                sum += qlp_coeff[1] * (FLAC__int64)data[i - 2]; /* Falls through. */
+            case 1:
+                sum += qlp_coeff[0] * (FLAC__int64)data[i - 1];
+            }
+            residual[i] = data[i] - (sum >> lp_quantization);
+        }
+    }
+    else
+    { /* order > 12 */
+        for (i = 0; i < (int)data_len; i++)
+        {
+            sum = 0;
+            switch (order)
+            {
+            case 32:
+                sum += qlp_coeff[31] * (FLAC__int64)data[i - 32]; /* Falls through. */
+            case 31:
+                sum += qlp_coeff[30] * (FLAC__int64)data[i - 31]; /* Falls through. */
+            case 30:
+                sum += qlp_coeff[29] * (FLAC__int64)data[i - 30]; /* Falls through. */
+            case 29:
+                sum += qlp_coeff[28] * (FLAC__int64)data[i - 29]; /* Falls through. */
+            case 28:
+                sum += qlp_coeff[27] * (FLAC__int64)data[i - 28]; /* Falls through. */
+            case 27:
+                sum += qlp_coeff[26] * (FLAC__int64)data[i - 27]; /* Falls through. */
+            case 26:
+                sum += qlp_coeff[25] * (FLAC__int64)data[i - 26]; /* Falls through. */
+            case 25:
+                sum += qlp_coeff[24] * (FLAC__int64)data[i - 25]; /* Falls through. */
+            case 24:
+                sum += qlp_coeff[23] * (FLAC__int64)data[i - 24]; /* Falls through. */
+            case 23:
+                sum += qlp_coeff[22] * (FLAC__int64)data[i - 23]; /* Falls through. */
+            case 22:
+                sum += qlp_coeff[21] * (FLAC__int64)data[i - 22]; /* Falls through. */
+            case 21:
+                sum += qlp_coeff[20] * (FLAC__int64)data[i - 21]; /* Falls through. */
+            case 20:
+                sum += qlp_coeff[19] * (FLAC__int64)data[i - 20]; /* Falls through. */
+            case 19:
+                sum += qlp_coeff[18] * (FLAC__int64)data[i - 19]; /* Falls through. */
+            case 18:
+                sum += qlp_coeff[17] * (FLAC__int64)data[i - 18]; /* Falls through. */
+            case 17:
+                sum += qlp_coeff[16] * (FLAC__int64)data[i - 17]; /* Falls through. */
+            case 16:
+                sum += qlp_coeff[15] * (FLAC__int64)data[i - 16]; /* Falls through. */
+            case 15:
+                sum += qlp_coeff[14] * (FLAC__int64)data[i - 15]; /* Falls through. */
+            case 14:
+                sum += qlp_coeff[13] * (FLAC__int64)data[i - 14]; /* Falls through. */
+            case 13:
+                sum += qlp_coeff[12] * (FLAC__int64)data[i - 13];
+                sum += qlp_coeff[11] * (FLAC__int64)data[i - 12];
+                sum += qlp_coeff[10] * (FLAC__int64)data[i - 11];
+                sum += qlp_coeff[9] * (FLAC__int64)data[i - 10];
+                sum += qlp_coeff[8] * (FLAC__int64)data[i - 9];
+                sum += qlp_coeff[7] * (FLAC__int64)data[i - 8];
+                sum += qlp_coeff[6] * (FLAC__int64)data[i - 7];
+                sum += qlp_coeff[5] * (FLAC__int64)data[i - 6];
+                sum += qlp_coeff[4] * (FLAC__int64)data[i - 5];
+                sum += qlp_coeff[3] * (FLAC__int64)data[i - 4];
+                sum += qlp_coeff[2] * (FLAC__int64)data[i - 3];
+                sum += qlp_coeff[1] * (FLAC__int64)data[i - 2];
+                sum += qlp_coeff[0] * (FLAC__int64)data[i - 1];
+            }
+            residual[i] = data[i] - (sum >> lp_quantization);
+        }
+    }
+
     return;
 }
-
-
 
 #endif /* FLAC__CPU_ARM64 && FLAC__HAS_ARCH64INTRIN */
 #endif /* FLAC__NO_ASM */
