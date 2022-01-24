@@ -305,11 +305,10 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(10, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(11, qlp_coeff_0, 0)
 
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
-                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -363,9 +362,9 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(9, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(10, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
                         
                         tmp_vec[0] = tmp_vec[12];
@@ -419,9 +418,9 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(8, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(9, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
                         
                         tmp_vec[0] = tmp_vec[12];
@@ -469,11 +468,10 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(7, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(8, qlp_coeff_0, 0)
 
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
-                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -519,11 +517,10 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(6, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(7, qlp_coeff_0, 0)
 
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
-                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -562,11 +559,10 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(5, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(6, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
-                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -604,11 +600,10 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(4, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(5, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
-                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                     }
@@ -642,9 +637,9 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(3, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(4, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
 
                         tmp_vec[0] = tmp_vec[12];
                     }
@@ -677,9 +672,9 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MACC_32BIT_LOOP_UNROOL_3(2, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(3, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
                     }
                 }
                 else { /* order == 3 */
@@ -701,10 +696,10 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MUL_32_BIT_LOOP_UNROOL_3(qlp_coeff_0, 2)
                         MACC_32BIT_LOOP_UNROOL_3(1, qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(2, qlp_coeff_0, 0)
-                        
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
                     }
                 }
             }
@@ -725,9 +720,9 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         MUL_32_BIT_LOOP_UNROOL_3(qlp_coeff_0, 1)
                         MACC_32BIT_LOOP_UNROOL_3(1, qlp_coeff_0, 0)
                         
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
                     }
                 }
                 else { /* order == 1 */
@@ -744,9 +739,9 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         summ_1 = vmulq_s32(tmp_vec[4], qlp_coeff_0);
                         summ_2 = vmulq_s32(tmp_vec[8], qlp_coeff_0);
 
-                        vst1q_s32(residual+i + 0, vld1q_s32(data+i + 0) - (summ_0 >> lp_quantization));
-                        vst1q_s32(residual+i + 4, vld1q_s32(data+i + 4) - (summ_1 >> lp_quantization));
-                        vst1q_s32(residual+i + 8, vld1q_s32(data+i + 8) - (summ_2 >> lp_quantization));
+                        vst1q_s32(residual+i + 0, vsubq_s32(vld1q_s32(data+i + 0) , vshlq_s32(summ_0,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 4, vsubq_s32(vld1q_s32(data+i + 4) , vshlq_s32(summ_1,vdupq_n_s32(-lp_quantization))));
+                        vst1q_s32(residual+i + 8, vsubq_s32(vld1q_s32(data+i + 8) , vshlq_s32(summ_2,vdupq_n_s32(-lp_quantization))));
                     }
                 }
             }
@@ -831,15 +826,24 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_intrin_neon(const FLAC__in
                         summ_l_2 = vmlal_laneq_s32(summ_l_2, vget_low_s32(tmp_vec[tmp_vec_ind+8]),qlp_coeff_vec, lane);\
                         summ_h_2 = vmlal_high_laneq_s32(summ_h_2,tmp_vec[tmp_vec_ind+8], qlp_coeff_vec, lane);
 
+#define SHIFT_SUMS_64BITS_AND_STORE_SUB() \
+                        res0 = vuzp1q_s32(vreinterpretq_s32_s64(vshlq_s64(summ_l_0,lp_quantization_vec)), vreinterpretq_s32_s64(vshlq_s64(summ_h_0,lp_quantization_vec))); \
+                        res1 = vuzp1q_s32(vreinterpretq_s32_s64(vshlq_s64(summ_l_1,lp_quantization_vec)), vreinterpretq_s32_s64(vshlq_s64(summ_h_1,lp_quantization_vec))); \
+                        res2 = vuzp1q_s32(vreinterpretq_s32_s64(vshlq_s64(summ_l_2,lp_quantization_vec)), vreinterpretq_s32_s64(vshlq_s64(summ_h_2,lp_quantization_vec))); \
+                        vst1q_s32(residual+i+0, vsubq_s32(vld1q_s32(data+i+0), res0));\
+                        vst1q_s32(residual+i+4, vsubq_s32(vld1q_s32(data+i+4), res1));\
+                        vst1q_s32(residual+i+8, vsubq_s32(vld1q_s32(data+i+8), res2));
 
 void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLAC__int32 *data, uint32_t data_len, const FLAC__int32 qlp_coeff[], uint32_t order, int lp_quantization, FLAC__int32 residual[]) {
 	int i;
 	FLAC__int64 sum;
 	
-	FLAC__ASSERT(order > 0);
-	FLAC__ASSERT(order <= 32);
-    
     int32x4_t tmp_vec[20];
+    int32x4_t res0, res1, res2;
+    int64x2_t  lp_quantization_vec = vdupq_n_s64(-lp_quantization);
+
+    FLAC__ASSERT(order > 0);
+	FLAC__ASSERT(order <= 32);
     
     // Using prologue reads is valid as encoder->private_->local_lpc_compute_residual_from_qlp_coefficients_64bit(signal+order,....)
 	if(order <= 12) {
@@ -888,13 +892,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(9, qlp_coeff_0, 2) 
                         MACC_64_BIT_LOOP_UNROOL_3(10,qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(11,qlp_coeff_0, 0) 
-                        
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization),vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization),vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual+i+4, vld1q_s32(data+i+4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization),vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual+i+8, vld1q_s32(data+i+8) - res2);
+
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
                         
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
@@ -948,12 +947,7 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(9, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(10,qlp_coeff_0, 0) 
 
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization),vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual+i, vld1q_s32(data+i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization),vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual+i+4, vld1q_s32(data+i+4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization),vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual+i+8, vld1q_s32(data+i+8) - res2);
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
                         
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
@@ -1008,13 +1002,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(8, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(9, qlp_coeff_0, 0) 
 
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
-
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
+                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -1062,13 +1051,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(7, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(8, qlp_coeff_0, 0) 
 
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
-
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
+                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -1119,13 +1103,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(6, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(7, qlp_coeff_0, 0) 
 
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
-
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
+                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -1167,14 +1146,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(5, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(6, qlp_coeff_0, 0) 
 
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
                         
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
-
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                         tmp_vec[2] = tmp_vec[14];
@@ -1190,8 +1163,6 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                     tmp_vec[0] = vld1q_s32(data - 6);
                     tmp_vec[1] = vld1q_s32(data - 5);
                     
-                    
-
                     for (i = 0; i < (int)data_len - 11; i += 12)
                     {
                         int64x2_t summ_l_0, summ_h_0, summ_l_1, summ_h_1, summ_l_2, summ_h_2;
@@ -1217,13 +1188,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(4, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(5, qlp_coeff_0, 0) 
                         
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
-
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
+                        
                         tmp_vec[0] = tmp_vec[12];
                         tmp_vec[1] = tmp_vec[13];
                     }
@@ -1258,13 +1224,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(3, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(4, qlp_coeff_0, 0) 
                         
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
-
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()
+                        
                         tmp_vec[0] = tmp_vec[12];
                     }
                 }
@@ -1298,13 +1259,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(1, qlp_coeff_0, 2) 
                         MACC_64_BIT_LOOP_UNROOL_3(2, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(3, qlp_coeff_0, 0) 
-                        
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                                               
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()                        
                     }
                 }
                 else
@@ -1329,12 +1285,7 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         MACC_64_BIT_LOOP_UNROOL_3(1, qlp_coeff_0, 1) 
                         MACC_64_BIT_LOOP_UNROOL_3(2, qlp_coeff_0, 0) 
                         
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()                        
                     }
                 }
             }
@@ -1356,13 +1307,8 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         
                         MUL_64_BIT_LOOP_UNROOL_3(qlp_coeff_0, 1)
                         MACC_64_BIT_LOOP_UNROOL_3(1, qlp_coeff_0, 0) 
-                        
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()                        
                     }
                 }
 
@@ -1388,12 +1334,7 @@ void FLAC__lpc_compute_residual_from_qlp_coefficients_wide_intrin_neon(const FLA
                         summ_l_2 = vmull_s32(vget_low_s32(tmp_vec[8]), qlp_coeff_0_2);
                         summ_h_2 = vmull_high_s32(tmp_vec[8], qlp_coeff_0_4);
 
-                        int32x4_t res0 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_0 >> lp_quantization), vreinterpretq_s32_s64(summ_h_0 >> lp_quantization));
-                        vst1q_s32(residual + i, vld1q_s32(data + i) - res0);
-                        int32x4_t res1 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_1 >> lp_quantization), vreinterpretq_s32_s64(summ_h_1 >> lp_quantization));
-                        vst1q_s32(residual + i + 4, vld1q_s32(data + i + 4) - res1);
-                        int32x4_t res2 = vuzp1q_s32(vreinterpretq_s32_s64(summ_l_2 >> lp_quantization), vreinterpretq_s32_s64(summ_h_2 >> lp_quantization));
-                        vst1q_s32(residual + i + 8, vld1q_s32(data + i + 8) - res2);
+                        SHIFT_SUMS_64BITS_AND_STORE_SUB()                        
                     }
                 }
             }
