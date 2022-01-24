@@ -58,7 +58,7 @@
 
 #ifndef FLAC__CPU_ARM64
 
-#if defined(__aarch64__) || defined(__arm64__) 
+#if defined(__aarch64__) || defined(__arm64__) || defined (_M_ARM64)
 #define FLAC__CPU_ARM64
 #endif
 
