@@ -33,6 +33,18 @@
 # endif
 #endif
 
+#if defined (_MSC_VER) && !defined (__clang__)
+  /*
+   * The .n128_u64 field is first.  Combine pairs of 32-bit integers in little-endian order.
+   * (we need to avoid a GCCism on Visual Studio)
+   */
+# define INIT_uint32x4_t(w,x,y,z) { .n128_u32 = {w, x, y, z} }
+# define INIT_int32x4_t(w,x,y,z) { .n128_i32 = {w, x, y, z} }
+#else
+# define INIT_uint32x4_t(w,x,y,z) { (w), (x), (y), (z) }
+# define INIT_int32x4_t(w,x,y,z) { (w), (x), (y), (z) }
+#endif
+
 void FLAC__lpc_compute_autocorrelation_intrin_neon_lag_4(const FLAC__real data[], uint32_t data_len, uint32_t lag, FLAC__real autoc[]) {
     int i = 0;
     int limit = data_len - 4;
