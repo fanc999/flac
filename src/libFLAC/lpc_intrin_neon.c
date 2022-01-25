@@ -20,6 +20,19 @@
 # include <arm_neon.h>
 #endif
 
+/*
+ * The Visual Studio headers may not have vmlaq_laneq_s32()/vmulq_laneq_s32() defined-
+ * This is copied from Visual Studio headers that do have them defined
+ */
+#ifdef _MSC_VER
+# ifndef vmlaq_laneq_s32
+#  define vmlaq_laneq_s32(src1, src2, src3, lane) neon_mlaqvind32q(src1, src2, src3, lane)
+# endif
+# ifndef vmulq_laneq_s32
+#  define vmulq_laneq_s32(src1, src2, lane) neon_mulqvind32q(src1, src2, lane)
+# endif
+#endif
+
 void FLAC__lpc_compute_autocorrelation_intrin_neon_lag_4(const FLAC__real data[], uint32_t data_len, uint32_t lag, FLAC__real autoc[]) {
     int i = 0;
     int limit = data_len - 4;
