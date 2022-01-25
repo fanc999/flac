@@ -7,7 +7,18 @@
 #include "FLAC/assert.h"
 #include "FLAC/format.h"
 #include "private/macros.h"
-#include <arm_neon.h>
+
+/*
+ * Sadly, the Visual Studio 2017 headers do not allow us to include arm_neon.h for ARM64
+ * builds, so we must include arm64_neon.h instead.  Interestingly, Visual Studio 2019
+ * and later allow us to include arm_neon.h for ARM64 builds, which will in turn include
+ * arm64_neon.h
+ */
+#if defined (_MSC_VER) && (_MSC_VER < 1920)
+# include <arm64_neon.h>
+#else
+# include <arm_neon.h>
+#endif
 
 void FLAC__lpc_compute_autocorrelation_intrin_neon_lag_4(const FLAC__real data[], uint32_t data_len, uint32_t lag, FLAC__real autoc[]) {
     int i = 0;
